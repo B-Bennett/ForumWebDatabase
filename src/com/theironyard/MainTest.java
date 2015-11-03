@@ -20,8 +20,8 @@ public class MainTest {
     }
     public void endConnection(Connection conn) throws SQLException {
         Statement stmt = conn.createStatement();
-        stmt.execute("DROP TALBE users");
-        stmt.execute("DROP TALBE messages");
+        stmt.execute("DROP TABLE users");
+        stmt.execute("DROP TABLE messages");
         conn.close();
     }
 
@@ -33,6 +33,16 @@ public class MainTest {
         endConnection(conn);
 
         assertTrue(user != null);
+    }
+    @Test
+    public void testMessage() throws SQLException {
+        Connection conn = startConnection();
+        Main.insertUser(conn, "Alice", "");
+        Main.insertMessage(conn, 1, -1, "Hello, World");
+        Message message = Main.selectMessage(conn, 1);
+        endConnection(conn);
+        assertTrue(message != null);
+
     }
 
 

@@ -17,7 +17,7 @@ public class Main {
         stmt.execute("CREATE TABLE IF NOT EXISTS messages (id IDENTITY, user_id INT, reply_id INT, text VARCHAR)");
     }
     public static void insertUser(Connection conn, String name, String password) throws SQLException {
-        PreparedStatement stmt = conn.prepareStatement("INSERT INTO users VALUES (NULL, ?, ?");
+        PreparedStatement stmt = conn.prepareStatement("INSERT INTO users VALUES (NULL, ?, ?)");
         stmt.setString(1, name);
         stmt.setString(2, password);
         stmt.execute();
@@ -33,6 +33,27 @@ public class Main {
             user.password = results.getString("password");
         }
         return user;
+    }
+    public static void insertMessage(Connection conn, int userId, int replyId, String text) throws SQLException {
+        PreparedStatement stmt = conn.prepareStatement("INSERT INTO messages VALUES (NULL, ?, ?)");
+        stmt.setInt(1, userId);
+        stmt.setInt(2, replyId);
+        stmt.setString(3, text);
+        stmt.execute();
+    }
+    public static Message selectMessage(Connection conn, int id) throws SQLException {
+        Message message = null;
+        PreparedStatement stmt = conn.prepareStatement("SELECT * FROM messages INNER JOIN users ON messages.user_id = users.id WHERE messages.id = ?");
+        stmt.setInt(1, id);
+        ResultSet results = stmt.executeQuery();
+        if (results.next()) {
+            message = new Message();
+            message.id = results.getInt("messages.id");
+            message.replyId = results.getInt("messages.reply_id");
+            message.username = results.getString("user.name");
+            message.text = results.getString("messages.text");
+        }
+        return message;
     }
 
     public static void main(String[] args) throws SQLException {
